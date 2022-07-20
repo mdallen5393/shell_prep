@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 char **av;
 
 char **make_av(char *);
 void print_array(char **av);
-void execute(char **command);
+int execute(char **command);
 
 int main(void)
 {
@@ -25,7 +28,8 @@ int main(void)
 		else
 		{
 			command = make_av(buffer);
-			execute(command);
+			if (execute(command) == -1)
+				break;
 		}
 	}
 	
@@ -36,9 +40,27 @@ int main(void)
 }
 
 
-void execute(char **command)
+int execute(char **command)
 {
-	pid_t is_kid = 
+	pid_t is_kid;
+	
+	is_kid = fork();
+
+	if (is_kid != 0)
+	{
+		wait(NULL);
+		return(0);
+	}
+	if (is_kid == 0)
+	{
+		if (execve(command[0], command, NULL) == -1)
+		{
+			perror("Error: ");
+			return (-1);
+		}
+	}
+
+	return (0);
 }
 
 
@@ -57,7 +79,7 @@ char **make_av(char *str)
 		i++;
 	}
 
-	av = malloc(sizeof(*av) * (numArgs + 1));
+	av = malloc(sizeof(*av) * (numArgs + 2));
 
 	argument = strtok(buffer, " \n");
 	av[0] = argument;
@@ -71,7 +93,6 @@ char **make_av(char *str)
 	}
 
 	av[i] = NULL;
-	/*print_array(av);*/
 
 	return (av);
 }
@@ -85,4 +106,6 @@ void print_array(char **array)
 		printf("%s\n", array[i]);
 		i++;
 	}
+	if (array[i] == NULL)
+		printf("NULL\n");
 }
