@@ -1,4 +1,4 @@
-#include "lists.h"
+#include "main.h"
 
 /**
  * free_list - frees a list_t list.
@@ -13,7 +13,6 @@ void free_list(list_t *head)
 		temp = head;
 		head = head->next;
 		free(temp->str);
-		/*free(temp->next);*/
 		free(temp);
 	}
 

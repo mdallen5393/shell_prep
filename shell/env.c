@@ -1,11 +1,7 @@
 #include "main.h"
 
-char *_getenv(const char *name);
-void printenv(void);
-
 int main(int ac, char **av, char **env)
 {
-	/*printenv();*/
 	printf("%p\n", environ[0]);
 	printf("%p\n", env[0]);
 	printf("%s\n", _getenv("PATH"));

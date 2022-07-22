@@ -1,85 +1,79 @@
 #include "main.h"
 
-char **av;
-char **make_env(char *str);
-char *_stat(char **av);
-char *_which(char *exec);
-void print_array(char **array);
-
-int main(void)
+int main(int ac, char **av)
 {
-	printf("'ls' is located in the folder: ");
-	printf("%s", _which("cppw"));
+	printf("'%s' is located in the folder: ", av[1]);
+	printf("%s", _which(av[1]));
 	printf("\n");
 }
+
 
 char *_which(char *exec)
 {
 	char *executable;
-	char *path;
-	char **path_array;
+	char *path, *curr;
+	list_t *path_list;
 	int i = 0;
 	char *final_path;
-
+	struct stat st;
+	
 	executable = strcpycat("/", exec);
 	path = _getenv("PATH");
-	path_array = make_env(path);
-
-	while (path_array[i])
+	path_list = make_env(path);
+	while (path_list)
 	{
-		path_array[i] = strcpycat(path_array[i], executable);
-		i++;
+		curr = strcpycat(path_list->str, executable);
+		if (stat(curr, &st) == 0)
+			return (curr);
+		path_list = path_list->next;
 	}
-	
-	final_path = _stat(path_array);
-	if (final_path)
-		return (final_path);
-	
+
 	return (NULL);
 }
-
-char *_stat(char **av)
+/*
+char *_stat(char *filename)
 {
 	unsigned int i;
 	struct stat st;
 
 	i = 0;
-	while (av[i])
+	while (filename)
 	{
-		if (stat(av[i], &st) == 0)
-			return (av[i]);
-		i++;
+		if (stat(filename, &st) == 0)
+			return (filename);
 	}
 	return (NULL);
 }
-
-char **make_env(char *str)
+*/
+list_t *make_env(char *str)
 {
+	list_t *env;
+	list_t *head = env;
+	list_t *new;
+
 	char *buffer = strdup(str);
-	char *element;
-	int i = 0, numElements = 0;
+	char *nodeStr;
+	int i = 0, numNodes = 0;
+	
+	nodeStr = strtok(buffer, ":");
 
-	while (buffer[i])
+	new = malloc(sizeof(list_t));
+	if (!new)
 	{
-		if (buffer[i] == ':')
-			numElements++;
+		printf("Error\n");
+		return (NULL);
+	}
+	
+	new->str = nodeStr;
+	new->next = NULL;
+
+	while (nodeStr != NULL)
+	{
+		nodeStr = strtok(NULL, ":");
+		add_node_end(&head, nodeStr);
 		i++;
 	}
-
-	av = malloc(sizeof(*av) * (numElements + 2));
-
-	element = strtok(buffer, ":");
-	av[0] = element;
-
-	i = 1;
-	while (element != NULL)
-	{
-		element = strtok(NULL, ":");
-		av[i] = element;
-		i++;
-	}
-
-	return (av);
+	return (head);
 }
 
 void print_array(char **array)

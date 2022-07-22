@@ -1,15 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
-char **av;
-
-char **make_av(char *);
-void print_array(char **av);
-int execute(char **command);
+#include "main.h"
 
 int main(void)
 {
@@ -21,7 +10,8 @@ int main(void)
 	{
 		printf("($) ");
 
-		getline(&buffer, &bufsize, stdin);
+		if (getline(&buffer, &bufsize, stdin) == 1)
+			continue;
 		
 		if (strcmp(buffer, "exit\n") == 0)
 			break;
@@ -82,6 +72,10 @@ char **make_av(char *str)
 	av = malloc(sizeof(*av) * (numArgs + 2));
 
 	argument = strtok(buffer, " \n");
+	
+	if (argument[0] != '/')
+		argument = _which(argument);
+	
 	av[0] = argument;
 	
 	i = 1;
@@ -95,17 +89,4 @@ char **make_av(char *str)
 	av[i] = NULL;
 
 	return (av);
-}
-
-void print_array(char **array)
-{
-	int i = 0;
-
-	while (array[i] != NULL)
-	{
-		printf("%s\n", array[i]);
-		i++;
-	}
-	if (array[i] == NULL)
-		printf("NULL\n");
 }
