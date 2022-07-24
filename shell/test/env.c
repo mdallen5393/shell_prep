@@ -1,6 +1,6 @@
 #include "main.h"
 
-char **a = {"TEST=hello", "STUFF=yaaaay", "TRASH=your mom"};
+char **a;
 
 int main(int ac, char **av, char **env)
 {
@@ -8,22 +8,29 @@ int main(int ac, char **av, char **env)
 	char *name = "TESTYBOIII";
 	char *value = "hi guyz";
 	
+	a = malloc(sizeof(*a) * 3);
+	a[0] = "TEST=hello";
+	a[1] = "STUFF=yaaaay";
+	a[2] = "TRASH=your mom";
+
 	printf("----\n");
-	while (a[i])
+	while (*(a + i) != NULL)
 	{
 		printf("%s\n", a[i]);
 		i++;
 	}
 	printf("----\n");
 	
+	i = 0;
 	_setenv(name, value, 0);
-	while (a[i])
+	while (*(a + i))
 	{
 		printf("%s\n", a[i]);
 		i++;
 	}
 	printf("----\n");
 	
+	i = 0;
 	_setenv(name, "hello", 0);
 	while (a[i])
 	{
@@ -32,6 +39,7 @@ int main(int ac, char **av, char **env)
 	}
 	printf("----\n");
 
+	i = 0;
 	_unsetenv(name);
 	while (a[i])
 	{
@@ -44,9 +52,9 @@ int main(int ac, char **av, char **env)
 }
 
 
-int *envloc(const char *name)
+int envloc(const char *name)
 {
-	unsigned int i = 0;
+	int i = 0;
 	int diff;
 	int varlen = _strlen(name);
 
@@ -60,13 +68,13 @@ int *envloc(const char *name)
 	return (-1);
 }
 
-int _setenv(const char *name, const char *value, int overwrite)
+int _setenv(char *name, char *value, int overwrite)
 {
 	int i, len = 0;
 	int loc = envloc(name);
 	char **new_a;
-	
-	name = strcpycat(name, "=");
+	char *equal = "=";
+	name = strcpycat(name, equal);
 	name = strcpycat(name, value);
 	
 	if (loc != -1)
@@ -98,7 +106,7 @@ int _setenv(const char *name, const char *value, int overwrite)
 int _unsetenv(const char *name)
 {
 	int loc = envloc(name);
-	int i, j; len = 0;
+	int i, j, len = 0;
 	char **new_a;
 
 	while (a[len])

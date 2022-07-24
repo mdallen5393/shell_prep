@@ -39,8 +39,9 @@ char *_strdup(const char *str);
 /* --- env.c --- */
 void printenv(void);
 char *_getenv(const char *name);
-int _setenv(const char *name, const char *value, int overwrite);
+int _setenv(char *name, char *value, int overwrite);
 int _unsetenv(const char *name);
+int envloc(const char *name);
 
 /* --- which.c --- */
 char **av;
@@ -48,7 +49,6 @@ list_t *make_env(char *str);
 char *_stat(char *filename);
 char *_which(char *exec);
 void print_array(char **array);
-int *envloc(const char *name);
 
 /* --- linked list operations --- */
 size_t print_list(const list_t *h);
