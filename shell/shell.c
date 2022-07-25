@@ -60,21 +60,30 @@ char **make_av(char *str)
 	char *argument;
 	char prev = '0';
 	int i = 0, numArgs = 0;
-
+	
 	while (buffer[i])
 	{
-		if (buffer[i] == ' ' && prev != ' ')
+		if (buffer[i] == ' ')
+			i++;
+		else
+		{
 			numArgs++;
-		prev = buffer[i];
-		i++;
+			while (buffer[i] && buffer[i] != ' ')
+				i++;
+		}
 	}
-
-	av = malloc(sizeof(*av) * (numArgs + 2));
+	
+	av = malloc(sizeof(*av) * (numArgs + 1));
+	if (!av)
+	{
+		perror("Error malloc'ing for av\n");
+		exit(98);
+	}
 
 	argument = strtok(buffer, " \n");
 	
-	if (argument[0] != '/')
-		argument = _which(argument);
+	if (argument[0] != '/' && argument[0] != '.')//FIXME: remake buffer
+		argument = _strdup(_which(argument));
 	
 	av[0] = argument;
 	
@@ -87,6 +96,6 @@ char **make_av(char *str)
 	}
 
 	av[i] = NULL;
-
+	print_array(av); //TESTING
 	return (av);
 }
