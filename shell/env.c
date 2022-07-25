@@ -38,7 +38,7 @@ char *_getenv(const char *name)
 	return (NULL);
 }
 
-int *envloc(const char *name)
+int envloc(const char *name)
 {
 	unsigned int i = 0;
 	int diff;
@@ -57,12 +57,13 @@ int *envloc(const char *name)
 int _setenv(const char *name, const char *value, int overwrite)
 {
 	char *nameCpy = _strdup(name);
+	char *valueCpy = _strdup(value);
 	int i, len = 0;
 	int loc = envloc(name);
 	char **new_environ;
 	
-	nameCpy = strcpycat(name, "=");
-	nameCpy = strcpycat(name, value);
+	nameCpy = strcpycat(nameCpy, "=");
+	nameCpy = strcpycat(nameCpy, valueCpy);
 	
 	if (loc != -1)
 	{
